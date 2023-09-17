@@ -23,6 +23,10 @@ export default class PermissionSetCompare extends LightningElement {
     @track selectedObjects = [];
     @api permIdOne;
     @api permIdTwo;
+    @track comparisonResult;
+
+    @track permOneName;
+    @track permTwoName;
 
 
     // Comparison Result 
@@ -31,10 +35,9 @@ export default class PermissionSetCompare extends LightningElement {
     //Not used
     @track differenceData;
     @track differenceColumns = fieldDiffColumns;
+    @track objectApiString;
     // Not Used End
 
-    //tempValue
-    @track objectApiString;
 
     setTestData(one, two, obj) {
         this.permIdOne = one;
@@ -44,7 +47,6 @@ export default class PermissionSetCompare extends LightningElement {
     }
 
     async connectedCallback() {
-        console.log('comnnnected');
         // this.setTestData('0PS2x000001bM3aGAE', '0PS2x000001bM3GGAU', 'Account,Bear__c');
         //this.selectedObjects = ['Account','Bear__c'];
 
@@ -53,40 +55,25 @@ export default class PermissionSetCompare extends LightningElement {
             getAllObjectsOfOrg()
         ]);
 
-        console.log('the objects '+JSON.stringify(mapOfObjectNames))
         this.objectOptions = this.transformObjectIntoLabelAndValue(mapOfObjectNames);
         this.permissionOptions = this.transformPermissionIntoLabelAndValue(permissionRows);
     }
 
     async computeComparisonResult() {
-        console.log('the perm Id 1 ' + this.permIdOne);
-        console.log('the perm Id 2 ' + this.permIdTwo);
-        console.log('the selected objects ' + JSON.stringify(this.selectedObjects))
-        if(!this.permIdOne || !this.permIdTwo){
-            this.showToastMessage('Error!','Please Select Permissions To Compare','error');
-            return;
-        }
-        if(!this.selectedObjects.length){
-            this.showToastMessage('Error!','Please Select Objects To Compare','error');
-            return;
-        }
+        this.validations();
 
         const [permOne, permTwo] = await this.getPermissionDetails(this.permIdOne, this.permIdTwo, this.selectedObjects);
-
         let transformedPermissionOne = this.transformArray(permOne);
         let transformedPermissionTwo = this.transformArray(permTwo);
 
-        const comparisonResult = this.compareArraysByField(transformedPermissionOne, transformedPermissionTwo);
 
-        console.log('comparison different ' + JSON.stringify(comparisonResult.different));
-        this.diff = JSON.stringify(comparisonResult.different);
-        console.log('comparison same ' + JSON.stringify(comparisonResult.same));
-        console.log('comparison in first result ' + JSON.stringify(comparisonResult.inFirstOnly));
-        console.log('comparison in second result ' + JSON.stringify(comparisonResult.inSecondOnly));
+        this.permOneName = transformedPermissionOne[0].PermissionName;
+        this.permTwoName = transformedPermissionTwo[0].PermissionName;
 
-        //this.downloadSeparateComparisonFiles(comparisonResult);
-        /*console.log('Datatable different ' + JSON.stringify(this.dataTableTransform(comparisonResult.different)));
-        this.differenceData = this.dataTableTransform(comparisonResult.different);*/
+        this.comparisonResult = this.compareArraysByField(transformedPermissionOne, transformedPermissionTwo);
+
+        this.downloadSeparateComparisonFiles();
+
     }
 
     async getPermissionDetails(permissionSetIdOne, permissionSetIdTwo, selectedObjects) {
@@ -125,9 +112,20 @@ export default class PermissionSetCompare extends LightningElement {
         return sortedArray;
     }
 
+    validations() {
+        if (!this.permIdOne || !this.permIdTwo) {
+            this.showToastMessage('Error!', 'Please Select Permissions To Compare', 'error');
+            return;
+        }
+        if (!this.selectedObjects.length) {
+            this.showToastMessage('Error!', 'Please Select Objects To Compare', 'error');
+            return;
+        }
+    }
+
     transformObjectIntoLabelAndValue(objectRawData) {
         let deepCopy = JSON.parse(JSON.stringify(objectRawData));
-        let transformedArray = Object.entries(deepCopy).map(([key, value]) => ({ label: key, value:key }));
+        let transformedArray = Object.entries(deepCopy).map(([key, value]) => ({ label: key, value: key }));
         let sortedArray = transformedArray.sort((a, b) => a.label.localeCompare(b.label))
         return sortedArray;
     }
@@ -142,7 +140,7 @@ export default class PermissionSetCompare extends LightningElement {
 
     handleObjectChange(event) {
         let valueOfObjects = event.target.value;
-        this.selectedObjects =  valueOfObjects;
+        this.selectedObjects = valueOfObjects;
     }
 
     transformArray(arrayToChange) {
@@ -239,6 +237,9 @@ export default class PermissionSetCompare extends LightningElement {
     }
 
     separateFileTransform(x) {
+        if (!x) {
+            return;
+        }
         let y = {
             first: [],
             second: []
@@ -253,12 +254,25 @@ export default class PermissionSetCompare extends LightningElement {
         return y;
     }
 
-    downloadSeparateComparisonFiles(comparisonRawResult) {
-        let separatedData = this.separateFileTransform(comparisonRawResult.different);
-        let firstFileData = separatedData.first;
-        let secondFileData = separatedData.second;
-        this.downloadObjectAsJson(firstFileData, "firstFileData", false);
-        this.downloadObjectAsJson(secondFileData, "secondFileData", false);
+    downloadSeparateComparisonFiles() {
+        let separatedData = this.separateFileTransform(this.comparisonResult.different);
+        let firstFileData = separatedData?.first;
+        let secondFileData = separatedData?.second;
+        let availableInFirst = this.comparisonResult.inFirstOnly;
+        let availableInSecond = this.comparisonResult.inSecondOnly;
+
+        if (firstFileData.length > 0) {
+            this.downloadObjectAsJson(firstFileData, this.permOneName, false);
+        }
+        if (secondFileData.length > 0) {
+            this.downloadObjectAsJson(secondFileData, this.permTwoName, false);
+        }
+        if (availableInFirst.length > 0) {
+            this.downloadObjectAsJson(availableInFirst, `AvailableIn${this.permOneName}`, false);
+        }
+        if (availableInSecond.length > 0) {
+            this.downloadObjectAsJson(availableInSecond, `AvailableIn${this.permTwoName}`, false);
+        }
     }
 
     downloadObjectAsJson(dataToDownload, fileNameOfExport, isXMLFile) {
@@ -293,7 +307,7 @@ export default class PermissionSetCompare extends LightningElement {
     //     });
     //     return transformedArray;
     // }
-    showToastMessage(title,message, variant) {
+    showToastMessage(title, message, variant) {
         const toastEvent = new ShowToastEvent({
             title: title,
             message: message,
@@ -301,6 +315,6 @@ export default class PermissionSetCompare extends LightningElement {
         });
         this.dispatchEvent(toastEvent);
     }
-    
+
 
 }
