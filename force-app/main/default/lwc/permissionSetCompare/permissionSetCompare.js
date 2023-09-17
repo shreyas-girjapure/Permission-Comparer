@@ -2,6 +2,8 @@ import { LightningElement, track, api } from 'lwc';
 import getAllFieldPermissionByPermissionSetId from "@salesforce/apex/PermissionSetCompareUtility.getAllFieldPermissionByPermissionSetId";
 import getAllObjectsOfOrg from "@salesforce/apex/PermissionSetCompareUtility.getAllObjectsOfOrg";
 import getAllPermissionSets from "@salesforce/apex/PermissionSetCompareUtility.getAllPermissionSets";
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+
 
 const fieldDiffColumns = [
     { label: 'Object', fieldName: 'SobjectType' },
@@ -16,7 +18,7 @@ export default class PermissionSetCompare extends LightningElement {
     @track result = '';
     @track permOne = [];
     @track permTwo = [];
-    @track mapOfObjectNames;
+    @track objectOptions;
     @track permissionOptions = [];
     @track selectedObjects = [];
     @api permIdOne;
@@ -43,7 +45,7 @@ export default class PermissionSetCompare extends LightningElement {
 
     async connectedCallback() {
         console.log('comnnnected');
-        this.setTestData('0PS2x000001bM3aGAE', '0PS2x000001bM3GGAU', 'Account,Bear__c');
+        // this.setTestData('0PS2x000001bM3aGAE', '0PS2x000001bM3GGAU', 'Account,Bear__c');
         //this.selectedObjects = ['Account','Bear__c'];
 
         const [permissionRows, mapOfObjectNames] = await Promise.all([
@@ -51,10 +53,8 @@ export default class PermissionSetCompare extends LightningElement {
             getAllObjectsOfOrg()
         ]);
 
-        this.mapOfObjectNames = mapOfObjectNames;
-
-        console.log('Map of Object Names ' + JSON.stringify(mapOfObjectNames));
-        this.permissionOptions = this.transformIntoLabelAndValue(permissionRows) 
+        this.objectOptions = this.transformObjectIntoLabelAndValue(mapOfObjectNames);
+        this.permissionOptions = this.transformPermissionIntoLabelAndValue(permissionRows);
     }
 
     async computeComparisonResult() {
@@ -62,7 +62,7 @@ export default class PermissionSetCompare extends LightningElement {
         console.log('the perm Id 2 ' + this.permIdTwo);
         console.log('the selected objects ' + JSON.stringify(this.selectedObjects))
 
-        const [permOne, permTwo] = await this.getPermissionDetails(this.permIdOne, this.permIdTwo, this.selectedObjects);     
+        const [permOne, permTwo] = await this.getPermissionDetails(this.permIdOne, this.permIdTwo, this.selectedObjects);
 
         let transformedPermissionOne = this.transformArray(permOne);
         let transformedPermissionTwo = this.transformArray(permTwo);
@@ -70,13 +70,14 @@ export default class PermissionSetCompare extends LightningElement {
         const comparisonResult = this.compareArraysByField(transformedPermissionOne, transformedPermissionTwo);
 
         console.log('comparison different ' + JSON.stringify(comparisonResult.different));
-        //this.downloadSeparateComparisonFiles(comparisonResult);
-        /*console.log('Datatable different ' + JSON.stringify(this.dataTableTransform(comparisonResult.different)));
-        this.differenceData = this.dataTableTransform(comparisonResult.different);*/
         this.diff = JSON.stringify(comparisonResult.different);
         console.log('comparison same ' + JSON.stringify(comparisonResult.same));
         console.log('comparison in first result ' + JSON.stringify(comparisonResult.inFirstOnly));
         console.log('comparison in second result ' + JSON.stringify(comparisonResult.inSecondOnly));
+
+        //this.downloadSeparateComparisonFiles(comparisonResult);
+        /*console.log('Datatable different ' + JSON.stringify(this.dataTableTransform(comparisonResult.different)));
+        this.differenceData = this.dataTableTransform(comparisonResult.different);*/
     }
 
     async getPermissionDetails(permissionSetIdOne, permissionSetIdTwo, selectedObjects) {
@@ -87,7 +88,7 @@ export default class PermissionSetCompare extends LightningElement {
         return [permOne, permTwo];
     }
 
-    transformObjectData(arrayToTransform) {
+    transformPermissionData(arrayToTransform) {
         let deepCopy = JSON.parse(JSON.stringify(arrayToTransform));
         let transformedArray = deepCopy.map(({ Id, Name, IsOwnedByProfile, Profile }) => {
             let permissionName = '';
@@ -102,8 +103,8 @@ export default class PermissionSetCompare extends LightningElement {
         return transformedArray;
     }
 
-    transformIntoLabelAndValue(rawPermissionData) {
-        let transformedPermData = this.transformObjectData(rawPermissionData);
+    transformPermissionIntoLabelAndValue(rawPermissionData) {
+        let transformedPermData = this.transformPermissionData(rawPermissionData);
         let deepCopy = JSON.parse(JSON.stringify(transformedPermData));
         let transformedArray = deepCopy.map(({ Id, permissionName }) => {
             let result = {};
@@ -111,6 +112,12 @@ export default class PermissionSetCompare extends LightningElement {
             result.value = Id;
             return result;
         });
+        return transformedArray;
+    }
+
+    transformObjectIntoLabelAndValue(objectRawData) {
+        let deepCopy = JSON.parse(JSON.stringify(objectRawData));
+        let transformedArray = Object.entries(deepCopy).map(([key, value]) => ({ label: key, value:key }));
         return transformedArray;
     }
 
@@ -124,8 +131,7 @@ export default class PermissionSetCompare extends LightningElement {
 
     handleObjectChange(event) {
         let valueOfObjects = event.target.value;
-        this.objectApiString = valueOfObjects;
-        this.selectedObjects = valueOfObjects.split(',');
+        this.selectedObjects =  valueOfObjects;
     }
 
     transformArray(arrayToChange) {
@@ -276,5 +282,14 @@ export default class PermissionSetCompare extends LightningElement {
     //     });
     //     return transformedArray;
     // }
+    showToastMessage(title,message, variant) {
+        const toastEvent = new ShowToastEvent({
+            title: title,
+            message: message,
+            variant: variant, // Possible values: 'success', 'warning', 'error', or 'info'
+        });
+        this.dispatchEvent(toastEvent);
+    }
+    
 
 }

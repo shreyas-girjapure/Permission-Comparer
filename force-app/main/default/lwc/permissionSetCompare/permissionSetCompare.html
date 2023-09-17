@@ -9,18 +9,16 @@
 				placeholder="Select Permission" options={permissionOptions}
 				onchange={handlePermissionSetTwoChange}></lightning-combobox>
 
-			<lightning-input label="Object API Names" value={objectApiString} onchange={handleObjectChange}>
-			</lightning-input>
+			<lightning-dual-listbox name="objects" label="Select Objects" source-label="Available"
+				selected-label="Selected" field-level-help="Select Objects To Filter On" options={objectOptions}
+				value={selectedObjects} onchange={handleObjectChange}></lightning-dual-listbox>
 
-			<div class='slds-m-top_x-medium'>
+			<div class='slds-m-top_x-large'>
 				<lightning-button label="Compare" onclick={computeComparisonResult} variant="brand"></lightning-button>
 			</div>
-
-			<!-- <lightning-datatable key-field="Id" data={differenceData} columns={differenceColumns} hide-checkbox-column="true">
-			</lightning-datatable> -->
-
+<!-- 			
 			<lightning-textarea label="Differences" value={diff} readonly class="slds-m-top_medium">
-			</lightning-textarea>
+			</lightning-textarea> -->
 		</div>
 	</lightning-card>
 </template>
