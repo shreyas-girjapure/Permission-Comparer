@@ -1,0 +1,22 @@
+<template>
+	<lightning-card title="Permission Set Comparison">
+		<div class="slds-p-around_medium">
+			<lightning-input label="Permission Set 1" value={permIdOne} onchange={handlePermissionSetOneChange}>
+			</lightning-input>
+			<lightning-input label="Permission Set 2" value={permIdTwo} onchange={handlePermissionSetTwoChange}>
+			</lightning-input>
+			<lightning-input label="Object API Names" value={objectApiString} onchange={handleObjectChange}>
+			</lightning-input>
+
+			<div class='slds-m-top_x-medium'>
+				<lightning-button label="Compare" onclick={computeComparisonResult} variant="brand"></lightning-button>
+			</div>
+
+			<!-- <lightning-datatable key-field="Id" data={differenceData} columns={differenceColumns} hide-checkbox-column="true">
+			</lightning-datatable> -->
+			            
+			<lightning-textarea label="Differences" value={diff} readonly class="slds-m-top_medium">
+			</lightning-textarea>
+		</div>
+	</lightning-card>
+</template>
