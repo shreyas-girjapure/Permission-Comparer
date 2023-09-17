@@ -268,10 +268,10 @@ export default class PermissionSetCompare extends LightningElement {
             this.downloadObjectAsJson(secondFileData, this.permTwoName, false);
         }
         if (availableInFirst.length > 0) {
-            this.downloadObjectAsJson(availableInFirst, `AvailableIn${this.permOneName}`, false);
+            this.downloadObjectAsJson(availableInFirst, `OnlyAvailableIn${this.permOneName}`, false);
         }
         if (availableInSecond.length > 0) {
-            this.downloadObjectAsJson(availableInSecond, `AvailableIn${this.permTwoName}`, false);
+            this.downloadObjectAsJson(availableInSecond, `OnlyAvailableIn${this.permTwoName}`, false);
         }
     }
 
