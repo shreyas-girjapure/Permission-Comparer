@@ -5,6 +5,14 @@
         <name>ApexClass</name>
     </types>
     <types>
+        <members>Permission_Compare</members>
+        <name>CustomTab</name>
+    </types>
+    <types>
+        <members>Permission_Compare</members>
+        <name>FlexiPage</name>
+    </types>
+    <types>
         <members>permissionSetCompare</members>
         <name>LightningComponentBundle</name>
     </types>
