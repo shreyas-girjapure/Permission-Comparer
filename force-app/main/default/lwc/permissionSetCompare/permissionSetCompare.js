@@ -17,7 +17,7 @@ export default class PermissionSetCompare extends LightningElement {
     @track permOne = [];
     @track permTwo = [];
     @track mapOfObjectNames;
-    @track mapOfPermissions;
+    @track permissionOptions = [];
     @track selectedObjects = [];
     @api permIdOne;
     @api permIdTwo;
@@ -46,16 +46,15 @@ export default class PermissionSetCompare extends LightningElement {
         this.setTestData('0PS2x000001bM3aGAE', '0PS2x000001bM3GGAU', 'Account,Bear__c');
         //this.selectedObjects = ['Account','Bear__c'];
 
-        const [mapOfPermissions, mapOfObjectNames] = await Promise.all([
+        const [permissionRows, mapOfObjectNames] = await Promise.all([
             getAllPermissionSets(),
             getAllObjectsOfOrg()
         ]);
 
-        this.mapOfPermissions = mapOfPermissions;
         this.mapOfObjectNames = mapOfObjectNames;
 
         console.log('Map of Object Names ' + JSON.stringify(mapOfObjectNames));
-        console.log('Map of permissions ' + JSON.stringify(mapOfPermissions));
+        this.permissionOptions = this.transformIntoLabelAndValue(permissionRows) 
     }
 
     async computeComparisonResult() {
@@ -63,9 +62,7 @@ export default class PermissionSetCompare extends LightningElement {
         console.log('the perm Id 2 ' + this.permIdTwo);
         console.log('the selected objects ' + JSON.stringify(this.selectedObjects))
 
-        const [permOne, permTwo] = await this.getPermissionDetails(this.permIdOne, this.permIdTwo, this.selectedObjects);
-        console.log('the perm One ' + JSON.stringify(permOne));
-        console.log('the perm Tow' + JSON.stringify(permTwo));
+        const [permOne, permTwo] = await this.getPermissionDetails(this.permIdOne, this.permIdTwo, this.selectedObjects);     
 
         let transformedPermissionOne = this.transformArray(permOne);
         let transformedPermissionTwo = this.transformArray(permTwo);
@@ -73,7 +70,7 @@ export default class PermissionSetCompare extends LightningElement {
         const comparisonResult = this.compareArraysByField(transformedPermissionOne, transformedPermissionTwo);
 
         console.log('comparison different ' + JSON.stringify(comparisonResult.different));
-        this.downloadSeparateComparisonFiles(comparisonResult);
+        //this.downloadSeparateComparisonFiles(comparisonResult);
         /*console.log('Datatable different ' + JSON.stringify(this.dataTableTransform(comparisonResult.different)));
         this.differenceData = this.dataTableTransform(comparisonResult.different);*/
         this.diff = JSON.stringify(comparisonResult.different);
@@ -90,22 +87,45 @@ export default class PermissionSetCompare extends LightningElement {
         return [permOne, permTwo];
     }
 
+    transformObjectData(arrayToTransform) {
+        let deepCopy = JSON.parse(JSON.stringify(arrayToTransform));
+        let transformedArray = deepCopy.map(({ Id, Name, IsOwnedByProfile, Profile }) => {
+            let permissionName = '';
+            let finalResult = { Id, IsOwnedByProfile, permissionName }
+            if (Profile) {
+                finalResult.permissionName = Profile.Name
+            } else {
+                finalResult.permissionName = Name;
+            }
+            return finalResult;
+        });
+        return transformedArray;
+    }
+
+    transformIntoLabelAndValue(rawPermissionData) {
+        let transformedPermData = this.transformObjectData(rawPermissionData);
+        let deepCopy = JSON.parse(JSON.stringify(transformedPermData));
+        let transformedArray = deepCopy.map(({ Id, permissionName }) => {
+            let result = {};
+            result.label = permissionName;
+            result.value = Id;
+            return result;
+        });
+        return transformedArray;
+    }
+
     handlePermissionSetOneChange(event) {
         this.permIdOne = event.target.value;
-        console.log('the perm id one ' + this.permIdOne);
     }
 
     handlePermissionSetTwoChange(event) {
         this.permIdTwo = event.target.value;
-        console.log('the perm id two ' + this.permIdTwo);
     }
 
     handleObjectChange(event) {
         let valueOfObjects = event.target.value;
         this.objectApiString = valueOfObjects;
         this.selectedObjects = valueOfObjects.split(',');
-        console.log('the selected objects ' + JSON.stringify(this.selectedObjects))
-
     }
 
     transformArray(arrayToChange) {

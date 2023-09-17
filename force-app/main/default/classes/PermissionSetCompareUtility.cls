@@ -30,20 +30,20 @@ public class PermissionSetCompareUtility {
     }
     //PermissionSetCompareUtility.getAllPermissionSets()
     @AuraEnabled
-    public static Map<String,String> getAllPermissionSets(){
+    public static List<PermissionSet> getAllPermissionSets(){
         Map<String, String> result = new Map<String, String>();
 
         // Query all Permission Sets
         List<PermissionSet> permissionSets = [SELECT Id, Name, IsOwnedByProfile, Profile.Name FROM PermissionSet];
 
-        for (PermissionSet ps : permissionSets) {
-            if (ps.IsOwnedByProfile) {
-                result.put(ps.Id, ps.Profile.Name);
-            } else {
-                result.put(ps.Id, ps.Name);
-            }
-        }
+        // for (PermissionSet ps : permissionSets) {
+        //     if (ps.IsOwnedByProfile) {
+        //         result.put(ps.Id, ps.Profile.Name);
+        //     } else {
+        //         result.put(ps.Id, ps.Name);
+        //     }
+        // }
 
-        return result;
+        return permissionSets;
     }
 }
