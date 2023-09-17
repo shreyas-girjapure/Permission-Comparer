@@ -17,11 +17,12 @@ public class PermissionSetCompareUtility {
         Map<String,String> objectKeyAndLabelPair = new Map<String,String>();
         Map<String, Schema.SObjectType> schemaMap = Schema.getGlobalDescribe();
         for (String objectName : schemaMap.keySet()) {
+
             Schema.SObjectType objType = schemaMap.get(objectName);
-            String objectApiName = objType.getDescribe().getName();
+            String objectApiName = objType.getDescribe().getName();            
             String objectLabel = objType.getDescribe().getLabel();
 
-            if(!objectKeyAndLabelPair.containsKey(objectApiName)){
+            if(!objectKeyAndLabelPair.containsKey(objectApiName) && !objectApiName.containsignorecase('history') && !objectApiName.containsignorecase('tag') && !objectApiName.containsignorecase('share') && !objectApiName.containsignorecase('feed') && !objectApiName.containsignorecase('ChangeEvent')){
                 objectKeyAndLabelPair.put(objectApiName,objectLabel);
             }
             
