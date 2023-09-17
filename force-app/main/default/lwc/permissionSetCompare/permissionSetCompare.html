@@ -1,7 +1,6 @@
 <template>
 	<lightning-card title="Permission Set Comparison">
-		<div class="slds-p-around_medium">
-
+	<div class="slds-p-around_small slds-m-bottom_medium">
 			<lightning-combobox name="PermissionSetOne" label="PermissionSet One" value={permIdOne}
 				placeholder="Select Permission" options={permissionOptions}
 				onchange={handlePermissionSetOneChange}></lightning-combobox>
@@ -13,12 +12,12 @@
 				selected-label="Selected" field-level-help="Select Objects To Filter On" options={objectOptions}
 				value={selectedObjects} onchange={handleObjectChange}></lightning-dual-listbox>
 
-			<div class='slds-m-top_x-large'>
+			<div class='slds-m-top_x-small'>
 				<lightning-button label="Compare" onclick={computeComparisonResult} variant="brand"></lightning-button>
 			</div>
+		</div>
 <!-- 			
 			<lightning-textarea label="Differences" value={diff} readonly class="slds-m-top_medium">
 			</lightning-textarea> -->
-		</div>
 	</lightning-card>
 </template>

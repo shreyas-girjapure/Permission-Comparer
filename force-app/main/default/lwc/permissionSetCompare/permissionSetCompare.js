@@ -53,6 +53,7 @@ export default class PermissionSetCompare extends LightningElement {
             getAllObjectsOfOrg()
         ]);
 
+        console.log('the objects '+JSON.stringify(mapOfObjectNames))
         this.objectOptions = this.transformObjectIntoLabelAndValue(mapOfObjectNames);
         this.permissionOptions = this.transformPermissionIntoLabelAndValue(permissionRows);
     }
@@ -61,6 +62,14 @@ export default class PermissionSetCompare extends LightningElement {
         console.log('the perm Id 1 ' + this.permIdOne);
         console.log('the perm Id 2 ' + this.permIdTwo);
         console.log('the selected objects ' + JSON.stringify(this.selectedObjects))
+        if(!this.permIdOne || !this.permIdTwo){
+            this.showToastMessage('Error!','Please Select Permissions To Compare','error');
+            return;
+        }
+        if(!this.selectedObjects.length){
+            this.showToastMessage('Error!','Please Select Objects To Compare','error');
+            return;
+        }
 
         const [permOne, permTwo] = await this.getPermissionDetails(this.permIdOne, this.permIdTwo, this.selectedObjects);
 
@@ -112,13 +121,15 @@ export default class PermissionSetCompare extends LightningElement {
             result.value = Id;
             return result;
         });
-        return transformedArray;
+        let sortedArray = transformedArray.sort((a, b) => a.label.localeCompare(b.label));
+        return sortedArray;
     }
 
     transformObjectIntoLabelAndValue(objectRawData) {
         let deepCopy = JSON.parse(JSON.stringify(objectRawData));
         let transformedArray = Object.entries(deepCopy).map(([key, value]) => ({ label: key, value:key }));
-        return transformedArray;
+        let sortedArray = transformedArray.sort((a, b) => a.label.localeCompare(b.label))
+        return sortedArray;
     }
 
     handlePermissionSetOneChange(event) {
