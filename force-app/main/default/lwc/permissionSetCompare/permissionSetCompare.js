@@ -5,9 +5,7 @@ import getAllPermissionSets from "@salesforce/apex/PermissionSetCompareUtility.g
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 export default class PermissionSetCompare extends LightningElement {
-    @track result = '';
-    @track permOne = [];
-    @track permTwo = [];
+
     @track objectOptions;
     @track permissionOptions = [];
     @track selectedObjects = [];
@@ -25,6 +23,8 @@ export default class PermissionSetCompare extends LightningElement {
     //Not used
     @track differenceData;
     @track objectApiString;
+    @track permOne = [];
+    @track permTwo = [];
     // Not Used End
 
 
