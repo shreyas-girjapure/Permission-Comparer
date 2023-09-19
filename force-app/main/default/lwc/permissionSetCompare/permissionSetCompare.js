@@ -4,16 +4,6 @@ import getAllObjectsOfOrg from "@salesforce/apex/PermissionSetCompareUtility.get
 import getAllPermissionSets from "@salesforce/apex/PermissionSetCompareUtility.getAllPermissionSets";
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
-
-const fieldDiffColumns = [
-    { label: 'Object', fieldName: 'SobjectType' },
-    { label: 'Api Name', fieldName: 'Field' },
-    { label: 'Permission One Read', fieldName: 'firstPermissionsRead' },
-    { label: 'Permission Two Read', fieldName: 'secondPermissionsRead' },
-    { label: 'Permission One Edit', fieldName: 'firstPermissionsEdit' },
-    { label: 'Permission Two Edit', fieldName: 'secondPermissionsEdit' }
-];
-
 export default class PermissionSetCompare extends LightningElement {
     @track result = '';
     @track permOne = [];
@@ -34,7 +24,6 @@ export default class PermissionSetCompare extends LightningElement {
 
     //Not used
     @track differenceData;
-    @track differenceColumns = fieldDiffColumns;
     @track objectApiString;
     // Not Used End
 
@@ -47,8 +36,7 @@ export default class PermissionSetCompare extends LightningElement {
     }
 
     async connectedCallback() {
-        // this.setTestData('0PS2x000001bM3aGAE', '0PS2x000001bM3GGAU', 'Account,Bear__c');
-        //this.selectedObjects = ['Account','Bear__c'];
+        this.setTestData('0PS2x000001fV5LGAU', '0PS2x000001bM3GGAU', 'Account,Bear__c,Idea,Knowledge__kav,TimeSlot');
 
         const [permissionRows, mapOfObjectNames] = await Promise.all([
             getAllPermissionSets(),
@@ -56,21 +44,21 @@ export default class PermissionSetCompare extends LightningElement {
         ]);
 
         this.objectOptions = this.transformObjectIntoLabelAndValue(mapOfObjectNames);
-        this.permissionOptions = this.transformPermissionIntoLabelAndValue(permissionRows);
+        this.permissionOptions = this.transformPermissionSetsIntoLabelAndValue(permissionRows);
     }
 
     async computeComparisonResult() {
         this.validations();
 
         const [permOne, permTwo] = await this.getPermissionDetails(this.permIdOne, this.permIdTwo, this.selectedObjects);
-        let transformedPermissionOne = this.transformArray(permOne);
-        let transformedPermissionTwo = this.transformArray(permTwo);
+        let transformedFieldPermissionOne = this.transformFieldPermissionsArray(permOne);
+        let transformedFieldPermissionTwo = this.transformFieldPermissionsArray(permTwo);
 
-        
-        this.permOneName = transformedPermissionOne[0]?.PermissionName;
-        this.permTwoName = transformedPermissionTwo[0]?.PermissionName;
 
-        this.comparisonResult = this.compareArraysByField(transformedPermissionOne, transformedPermissionTwo);
+        this.permOneName = transformedFieldPermissionOne[0]?.PermissionName;
+        this.permTwoName = transformedFieldPermissionTwo[0]?.PermissionName;
+
+        this.comparisonResult = this.compareArraysByField(transformedFieldPermissionOne, transformedFieldPermissionTwo);
 
         this.downloadSeparateComparisonFiles();
 
@@ -84,7 +72,7 @@ export default class PermissionSetCompare extends LightningElement {
         return [permOne, permTwo];
     }
 
-    transformPermissionData(arrayToTransform) {
+    transformPermissionSetData(arrayToTransform) {
         let deepCopy = JSON.parse(JSON.stringify(arrayToTransform));
         let transformedArray = deepCopy.map(({ Id, Name, IsOwnedByProfile, Profile }) => {
             let permissionName = '';
@@ -99,8 +87,8 @@ export default class PermissionSetCompare extends LightningElement {
         return transformedArray;
     }
 
-    transformPermissionIntoLabelAndValue(rawPermissionData) {
-        let transformedPermData = this.transformPermissionData(rawPermissionData);
+    transformPermissionSetsIntoLabelAndValue(rawPermissionData) {
+        let transformedPermData = this.transformPermissionSetData(rawPermissionData);
         let deepCopy = JSON.parse(JSON.stringify(transformedPermData));
         let transformedArray = deepCopy.map(({ Id, permissionName }) => {
             let result = {};
@@ -143,7 +131,7 @@ export default class PermissionSetCompare extends LightningElement {
         this.selectedObjects = valueOfObjects;
     }
 
-    transformArray(arrayToChange) {
+    transformFieldPermissionsArray(arrayToChange) {
         let deepCopy = JSON.parse(JSON.stringify(arrayToChange));
         let transformedArray = deepCopy.map(({ Id, SobjectType, Field, PermissionsRead, PermissionsEdit, PermissionName, Parent }) => {
             PermissionName = '';
@@ -293,7 +281,7 @@ export default class PermissionSetCompare extends LightningElement {
         downloadAnchorNode.remove();
     }
 
-    // transformArray(arrayToChange) {
+    // transformFieldPermissionsArray(arrayToChange) {
     //     let deepCopy = JSON.parse(JSON.stringify(arrayToChange));
     //     let transformedArray = deepCopy.map(({ SobjectType, Field, PermissionsRead, PermissionsEdit, PermissionName, Parent }) => {
     //         PermissionName = '';
