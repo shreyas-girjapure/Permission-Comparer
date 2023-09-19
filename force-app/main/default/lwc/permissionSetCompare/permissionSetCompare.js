@@ -58,15 +58,14 @@ export default class PermissionSetCompare extends LightningElement {
         let transformedObjectPermissionOne = this.transformObjectPermissionsArray(objectPermOne);
         let transformedObjectPermissionTwo = this.transformObjectPermissionsArray(objectPermTwo);
 
-        console.log(' the object permOne ' + JSON.stringify(transformedObjectPermissionOne));
-        console.log(' the object permTwo ' + JSON.stringify(transformedObjectPermissionTwo));
 
         this.permOneName = transformedFieldPermissionOne[0]?.PermissionName;
         this.permTwoName = transformedFieldPermissionTwo[0]?.PermissionName;
 
         this.fieldComparisonResult = this.compareArraysByField(transformedFieldPermissionOne, transformedFieldPermissionTwo,'Field');
         let objectComparisonResult = this.compareArraysByField(transformedObjectPermissionOne, transformedObjectPermissionTwo,'SobjectType');
-        //console.log('the object comparison reuslt '+ JSON.stringify(objectComparisonResult));
+        console.log('the object comparison reuslt '+ JSON.stringify(objectComparisonResult));
+        console.log('the fields comparison reuslt '+ JSON.stringify(this.fieldComparisonResult));
 
         this.downloadSeparateComparisonFiles();
 

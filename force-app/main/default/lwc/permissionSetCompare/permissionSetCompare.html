@@ -1,24 +1,29 @@
 <template>
-	<lightning-card title="Permission Set Comparison">
-	<div class="slds-p-around_small slds-m-bottom_medium">
-			<lightning-combobox name="PermissionSetOne" label="PermissionSet One" value={permIdOne}
-				placeholder="Select Permission" options={permissionOptions}
-				onchange={handlePermissionSetOneChange}></lightning-combobox>
-			<lightning-combobox name="PermissionSetTwo" label="PermissionSet Two" value={permIdTwo}
-				placeholder="Select Permission" options={permissionOptions}
-				onchange={handlePermissionSetTwoChange}></lightning-combobox>
-
+	<div class="slds-card">
+		<div class="slds-p-around_small  slds-grid slds-wrap slds-gutters">
+			<div class="slds-col">
+				<lightning-combobox name="PermissionSetOne" label="PermissionSet One" value={permIdOne}
+					placeholder="Select Permission" options={permissionOptions}
+					onchange={handlePermissionSetOneChange}></lightning-combobox>
+			</div>
+			<div class="slds-col">
+				<lightning-combobox name="PermissionSetTwo" label="PermissionSet Two" value={permIdTwo}
+					placeholder="Select Permission" options={permissionOptions}
+					onchange={handlePermissionSetTwoChange}></lightning-combobox>
+			</div>
+			<div class="slds-col slds-m-top_large">
+				<lightning-button  label="Compare" onclick={computeComparisonResult}
+					variant="brand"></lightning-button>
+			</div>
+		</div>
+		<div class="slds-p-around_small">
 			<lightning-dual-listbox name="objects" label="Select Objects" source-label="Available"
 				selected-label="Selected" field-level-help="Select Objects To Filter On" options={objectOptions}
 				value={selectedObjects} onchange={handleObjectChange}></lightning-dual-listbox>
-
-			<div class='slds-m-top_x-small'>
-				<lightning-button class="slds-p-around_small" label="Compare" onclick={computeComparisonResult} variant="brand"></lightning-button>
-				<!-- <lightning-button label="Download" class="slds-p-around_small" icon-name="utility:save" onclick={downloadSeparateComparisonFiles} variant="brand"></lightning-button> -->
-			</div>
 		</div>
-<!-- 			
-			<lightning-textarea label="Differences" value={diff} readonly class="slds-m-top_medium">
+	</div>
+
+	<!-- <lightning-textarea label="Differences" value={diff} readonly class="slds-m-top_medium">
 			</lightning-textarea> -->
-	</lightning-card>
+
 </template>
