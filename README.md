@@ -1,7 +1,7 @@
 # About Project 
 
 ## Unmanaged Package Link
-[Permission Comparer](https://login.salesforce.com/packaging/installPackage.apexp?p0=04t2x000004O0So)
+[Install Permission Comparer](https://login.salesforce.com/packaging/installPackage.apexp?p0=04t2x000004O0So)
 
 # Next Items
 

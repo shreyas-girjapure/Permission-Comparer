@@ -47,28 +47,34 @@ export default class PermissionSetCompare extends LightningElement {
     }
 
     async computeComparisonResult() {
-        if(!this.validations()){
+        if (!this.validations()) {
             return;
         }
-        
+
         //Field Permission
         const [permOne, permTwo] = await this.getFieldPermissionDetails(this.permIdOne, this.permIdTwo, this.selectedObjects);
         let transformedFieldPermissionOne = this.transformFieldPermissionsArray(permOne);
         let transformedFieldPermissionTwo = this.transformFieldPermissionsArray(permTwo);
+
+
+        const combinedFieldPermissions = this.combinePermissions(transformedFieldPermissionOne, transformedFieldPermissionTwo, 'Field');
+        console.log('COMBINED FIELD' + JSON.stringify(combinedFieldPermissions));
 
         // Object Permission
         const [objectPermOne, objectPermTwo] = await this.getObjectPermissionDetails(this.permIdOne, this.permIdTwo, this.selectedObjects);
         let transformedObjectPermissionOne = this.transformObjectPermissionsArray(objectPermOne);
         let transformedObjectPermissionTwo = this.transformObjectPermissionsArray(objectPermTwo);
 
+        const combinedObjectPermissions = this.combinePermissions(transformedObjectPermissionOne, transformedObjectPermissionTwo, 'SobjectType');
+        console.log('COMBINED Object' + JSON.stringify(combinedObjectPermissions));
 
         this.permOneName = transformedFieldPermissionOne[0]?.PermissionName;
         this.permTwoName = transformedFieldPermissionTwo[0]?.PermissionName;
 
-        this.fieldComparisonResult = this.compareArraysByField(transformedFieldPermissionOne, transformedFieldPermissionTwo,'Field');
-        let objectComparisonResult = this.compareArraysByField(transformedObjectPermissionOne, transformedObjectPermissionTwo,'SobjectType');
-        console.log('the object comparison reuslt '+ JSON.stringify(objectComparisonResult));
-        console.log('the fields comparison reuslt '+ JSON.stringify(this.fieldComparisonResult));
+        this.fieldComparisonResult = this.compareArraysByField(transformedFieldPermissionOne, transformedFieldPermissionTwo, 'Field');
+        let objectComparisonResult = this.compareArraysByField(transformedObjectPermissionOne, transformedObjectPermissionTwo, 'SobjectType');
+        // console.log('the object comparison reuslt ' + JSON.stringify(objectComparisonResult));
+        // console.log('the fields comparison reuslt ' + JSON.stringify(this.fieldComparisonResult));
 
         // this.downloadSeparateComparisonFiles();
 
@@ -174,7 +180,7 @@ export default class PermissionSetCompare extends LightningElement {
         return transformedArray;
     }
 
-    compareArraysByField(array1, array2,key) {
+    compareArraysByField(array1, array2, key) {
         const result = {
             same: [],
             inFirstOnly: [],
@@ -295,12 +301,94 @@ export default class PermissionSetCompare extends LightningElement {
         this.dispatchEvent(toastEvent);
     }
 
-    handleObjectChange(e){
+    handleObjectChange(e) {
         let selectionArray = [];
         e.detail.forEach(currentItem => {
             selectionArray.push(currentItem.value);
-        }); 
+        });
         this.selectedObjects = selectionArray;
     }
 
+    combinePermissions(permissionData1, permissionData2, key) {
+        const combinedPermissions = {};
+        // const permissionSetOneName = permissionData1[0].PermissionName.replace(/ /g, '');
+        // const permissionSetTwoName = permissionData2[0].PermissionName.replace(/ /g, '');
+        const permissionSetOneName = 'PermissionSetOne';
+        const permissionSetTwoName = 'PermissionSetTwo';
+
+        // Iterate through the first permission array
+        for (const permission of permissionData1) {
+            let keySeparator = permission[key];
+            if (key === 'Field') {
+                this.updateFieldPermission(combinedPermissions, permission, keySeparator, permissionSetOneName, permissionSetTwoName);
+            } else {
+                this.updateObjectPermission(combinedPermissions, permission, keySeparator, permissionSetOneName, permissionSetTwoName);
+            }
+        }
+
+        // Iterate through the second permission array
+        for (const permission of permissionData2) {
+            let keySeparator = permission[key];
+            if (key === 'Field') {
+                this.updateFieldPermission(combinedPermissions, permission, keySeparator, permissionSetOneName, permissionSetTwoName);
+            } else {
+                this.updateObjectPermission(combinedPermissions, permission, keySeparator, permissionSetOneName, permissionSetTwoName);
+            }
+        }
+
+        // Convert the combined permissions object into an array
+        const combinedPermissionsArray = Object.values(combinedPermissions);
+
+        return combinedPermissionsArray;
+    }
+
+    // Helper function to update the combined permissions
+    updateFieldPermission(combinedPermissions, permission, fieldKey, permissionSetOneName, permissionSetTwoName) {
+        if (!combinedPermissions[fieldKey]) {
+            combinedPermissions[fieldKey] = {
+                SobjectType: permission.SobjectType,
+                Field: permission.Field,
+                [`${permissionSetOneName}PermissionsRead`]: false,
+                [`${permissionSetOneName}PermissionsEdit`]: false,
+                [`${permissionSetTwoName}PermissionsRead`]: false,
+                [`${permissionSetTwoName}PermissionsEdit`]: false,
+            };
+        }
+        const permissionSetName = permission.PermissionName.replace(/ /g, '');
+
+        // Remove spaces from PermissionName and convert to camelCase
+
+        combinedPermissions[fieldKey][`${permissionSetName}PermissionsRead`] = permission.PermissionsRead;
+        combinedPermissions[fieldKey][`${permissionSetName}PermissionsEdit`] = permission.PermissionsEdit;
+    }
+    updateObjectPermission(combinedPermissions, permission, fieldKey, permissionSetOneName, permissionSetTwoName) {
+        if (!combinedPermissions[fieldKey]) {
+            combinedPermissions[fieldKey] = {
+                SobjectType: permission.SobjectType,
+                Field: permission.Field,
+                [`${permissionSetOneName}PermissionsRead`]: false,
+                [`${permissionSetOneName}PermissionsEdit`]: false,
+                [`${permissionSetOneName}PermissionsCreate`]: false,
+                [`${permissionSetOneName}PermissionsDelete`]: false,
+                [`${permissionSetOneName}PermissionsViewAllRecords`]: false,
+                [`${permissionSetOneName}PermissionsModifyAllRecords`]: false,
+                [`${permissionSetTwoName}PermissionsRead`]: false,
+                [`${permissionSetTwoName}PermissionsEdit`]: false,
+                [`${permissionSetTwoName}PermissionsCreate`]: false,
+                [`${permissionSetTwoName}PermissionsDelete`]: false,
+                [`${permissionSetTwoName}PermissionsViewAllRecords`]: false,
+                [`${permissionSetTwoName}PermissionsModifyAllRecords`]: false,
+            };
+        }
+        const permissionSetName = permission.PermissionName.replace(/ /g, '');
+
+        // Remove spaces from PermissionName and convert to camelCase
+
+        combinedPermissions[fieldKey][`${permissionSetName}PermissionsRead`] = permission.PermissionsRead;
+        combinedPermissions[fieldKey][`${permissionSetName}PermissionsEdit`] = permission.PermissionsEdit;
+        combinedPermissions[fieldKey][`${permissionSetName}PermissionsCreate`] = permission.PermissionsCreate;
+        combinedPermissions[fieldKey][`${permissionSetName}PermissionsDelete`] = permission.PermissionsDelete;
+        combinedPermissions[fieldKey][`${permissionSetName}PermissionsViewAllRecords`] = permission.PermissionsViewAllRecords;
+        combinedPermissions[fieldKey][`${permissionSetName}PermissionsModifyAllRecords`] = permission.PermissionsModifyAllRecords;
+    }
 }
