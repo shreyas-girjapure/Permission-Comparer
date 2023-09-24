@@ -125,7 +125,7 @@ export default class PermissionSetCompare extends LightningElement {
             isValid = false;
         }
         if (!this.selectedObjects.length) {
-            this.showToastMessage('Error!', 'Please Select Objects To Compare', 'error');
+            this.showToastMessage('Error!', 'Please Select Atleast One Object To Compare', 'error');
             isValid = false;
         }
         return isValid;
