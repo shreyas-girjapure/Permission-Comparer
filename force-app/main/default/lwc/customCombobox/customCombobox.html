@@ -2,8 +2,7 @@
 	<div class="slds-card" onmouseleave={handleContainerLeave}>
 		<div class="slds-form-element">
 			<div class="slds-combobox_container slds-has-selection">
-				<div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open"
-					>
+				<div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open">
 					<lightning-input type="search" label={label} onchange={handleSearch} onblur={blurhandler}
 						onclick={handleDropDownShow} placeholder={placeholder}>
 					</lightning-input>
@@ -17,7 +16,7 @@
 										<div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small"
 											role="option" data-value={item.label}>
 											<span class="slds-media__body">
-                                                <span class="slds-truncate" title={item.label} >{item.label}</span>
+												<span class="slds-truncate" title={item.label}>{item.label}</span>
 											</span>
 										</div>
 									</li>
