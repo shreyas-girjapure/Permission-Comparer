@@ -5,6 +5,22 @@ import getAllObjectsOfOrg from "@salesforce/apex/PermissionSetCompareUtility.get
 import getAllPermissionSets from "@salesforce/apex/PermissionSetCompareUtility.getAllPermissionSets";
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
+
+const columns = [
+    { label: 'Object Name', fieldName: 'SobjectType' },
+    {
+        label: 'Read 1', fieldName: 'PermissionSetOnePermissionsRead'
+    },
+    {
+        label: 'Edit 1 ', fieldName: 'PermissionSetOnePermissionsEdit'
+    },
+    {
+        label: 'Create 1', fieldName: 'PermissionSetOnePermissionsCreate'
+    },
+    {
+        label: 'Delete 1', fieldName: 'PermissionSetOnePermissionsDelete'
+    },
+];
 export default class PermissionSetCompare extends LightningElement {
 
     @track objectOptions;
@@ -24,6 +40,8 @@ export default class PermissionSetCompare extends LightningElement {
     @track permOne = [];
     @track permTwo = [];
     @track diff
+    columns = columns;
+    @track combinedObjectPermissions = [];
     // Not Used End
 
 
@@ -65,8 +83,8 @@ export default class PermissionSetCompare extends LightningElement {
         let transformedObjectPermissionOne = this.transformObjectPermissionsArray(objectPermOne);
         let transformedObjectPermissionTwo = this.transformObjectPermissionsArray(objectPermTwo);
 
-        const combinedObjectPermissions = this.combinePermissions(transformedObjectPermissionOne, transformedObjectPermissionTwo, 'SobjectType');
-        console.log('COMBINED Object' + JSON.stringify(combinedObjectPermissions));
+        this.combinedObjectPermissions = this.combinePermissions(transformedObjectPermissionOne, transformedObjectPermissionTwo, 'SobjectType');
+        console.log('COMBINED Object' + JSON.stringify(this.combinedObjectPermissions));
 
         this.permOneName = transformedFieldPermissionOne[0]?.PermissionName;
         this.permTwoName = transformedFieldPermissionTwo[0]?.PermissionName;

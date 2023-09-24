@@ -22,6 +22,12 @@
 			</div>
 		</div>
 		<div class="slds-p-around_small">
+			<lightning-datatable key-field="SobjectType" columns={columns} data={combinedObjectPermissions}
+				hide-checkbox-column default-sort-direction={defaultSortDirection} sorted-direction={sortDirection}
+				sorted-by={sortedBy} onsort={onHandleSort}>
+			</lightning-datatable>
+		</div>
+		<!-- <div class="slds-p-around_small">
 			<table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered ">
 				<thead>
 					<tr class="slds-line-height_reset">
@@ -110,6 +116,6 @@
 
 				</tbody>
 			</table>
-		</div>
+		</div> -->
 	</div>
 </template>
