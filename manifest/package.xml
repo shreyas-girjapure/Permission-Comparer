@@ -13,6 +13,7 @@
         <name>FlexiPage</name>
     </types>
     <types>
+        <members>customCombobox</members>
         <members>permissionSetCompare</members>
         <name>LightningComponentBundle</name>
     </types>

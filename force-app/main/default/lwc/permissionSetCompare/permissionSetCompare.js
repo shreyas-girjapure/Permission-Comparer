@@ -35,7 +35,7 @@ export default class PermissionSetCompare extends LightningElement {
     }
 
     async connectedCallback() {
-        this.setTestData('0PS2x000001fV5LGAU', '0PS2x000001bM3aGAE', 'Account,Bear__c,Idea,Knowledge__kav,TimeSlot');
+        // this.setTestData('0PS2x000001fV5LGAU', '0PS2x000001bM3aGAE', 'Account,Bear__c,Idea,Knowledge__kav,TimeSlot');
 
         const [permissionRows, mapOfObjectNames] = await Promise.all([
             getAllPermissionSets(),
@@ -47,7 +47,10 @@ export default class PermissionSetCompare extends LightningElement {
     }
 
     async computeComparisonResult() {
-        this.validations();
+        if(!this.validations()){
+            return;
+        }
+        
         //Field Permission
         const [permOne, permTwo] = await this.getFieldPermissionDetails(this.permIdOne, this.permIdTwo, this.selectedObjects);
         let transformedFieldPermissionOne = this.transformFieldPermissionsArray(permOne);
@@ -116,14 +119,16 @@ export default class PermissionSetCompare extends LightningElement {
     }
 
     validations() {
+        let isValid = true;
         if (!this.permIdOne || !this.permIdTwo) {
             this.showToastMessage('Error!', 'Please Select Permissions To Compare', 'error');
-            return;
+            isValid = false;
         }
         if (!this.selectedObjects.length) {
             this.showToastMessage('Error!', 'Please Select Objects To Compare', 'error');
-            return;
+            isValid = false;
         }
+        return isValid;
     }
 
     transformObjectIntoLabelAndValue(objectRawData) {
@@ -295,5 +300,16 @@ export default class PermissionSetCompare extends LightningElement {
         this.dispatchEvent(toastEvent);
     }
 
+    handleObjectChange(e){
+        let selectionArray = [];
+        e.detail.forEach(currentItem => {
+            selectionArray.push(currentItem.value);
+        }); 
+        this.selectedObjects = selectionArray;
+    }
+
+    handleObjectRemove(e){
+
+    }
 
 }

@@ -3,24 +3,30 @@
 		<div class="slds-p-around_small  slds-grid slds-wrap slds-gutters">
 			<div class="slds-col">
 				<lightning-combobox name="PermissionSetOne" label="PermissionSet One" value={permIdOne}
-					placeholder="Select Permission" options={permissionOptions}
-					onchange={handlePermissionSetOneChange}></lightning-combobox>
+					placeholder="Select Permission" options={permissionOptions} onchange={handlePermissionSetOneChange}>
+				</lightning-combobox>
 			</div>
 			<div class="slds-col">
 				<lightning-combobox name="PermissionSetTwo" label="PermissionSet Two" value={permIdTwo}
-					placeholder="Select Permission" options={permissionOptions}
-					onchange={handlePermissionSetTwoChange}></lightning-combobox>
+					placeholder="Select Permission" options={permissionOptions} onchange={handlePermissionSetTwoChange}>
+				</lightning-combobox>
 			</div>
+			<div class="slds-col">
+				<c-custom-combobox label="Select Objects" main-options={objectOptions}
+					onoptionchange={handleObjectChange}>
+				</c-custom-combobox>
+			</div>
+
 			<div class="slds-col slds-m-top_large">
-				<lightning-button  label="Compare" onclick={computeComparisonResult}
-					variant="brand"></lightning-button>
+				<lightning-button label="Compare" onclick={computeComparisonResult} variant="brand"></lightning-button>
 			</div>
 		</div>
-		<div class="slds-p-around_small">
+		<!-- <div class="slds-p-around_small">
 			<lightning-dual-listbox name="objects" label="Select Objects" source-label="Available"
 				selected-label="Selected" field-level-help="Select Objects To Filter On" options={objectOptions}
 				value={selectedObjects} onchange={handleObjectChange}></lightning-dual-listbox>
-		</div>
+
+		</div>  -->
 	</div>
 
 	<!-- <lightning-textarea label="Differences" value={diff} readonly class="slds-m-top_medium">

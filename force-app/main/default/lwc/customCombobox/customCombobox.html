@@ -1,62 +1,38 @@
 <template>
-    <div class="slds-form-element">
-        <label class="slds-form-element__label" for="combobox-id-2" id="combobox-label-id-131">{label}</label>
-        <div class="slds-form-element__control">
-            <div class="slds-combobox_container slds-has-selection">
-                <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open">
-                    <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
-                        <input type="text" class="slds-input slds-combobox__input" autocomplete="off" role="combobox"
-                            placeholder={placeholder} />
-                        <span
-                            class="slds-icon_container slds-icon-utility-search slds-input__icon slds-input__icon_right">
-                            <lightning-icon icon-name="utility:search" size="x-small"></lightning-icon>
-                        </span>
-                    </div>
-                    <div class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid" role="listbox"
-                        tabindex="0">
-                        <ul class="slds-listbox slds-listbox_vertical" role="presentation">
-                            <li role="presentation" class="slds-listbox__item">
-                                <div id="option740"
-                                    class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small"
-                                    role="option">
-                                    <span class="slds-media__figure slds-listbox__option-icon"></span>
-                                    <span class="slds-media__body">
-                                        <span class="slds-truncate" title="Accounts">Accounts</span>
-                                    </span>
-                                </div>
-                            </li>
-                            <!-- <template for:each={searchOptions} for:item="item" for:index="index">
-                                <li key={item.label} role="presentation" class="slds-listbox__item">
-                                    <div class="slds-media slds-listbox__option slds-listbox__option_entity slds-media_center"
-                                        role="option">
-                                        <span class="slds-media__body">
-                                            <span
-                                                class="slds-listbox__option-text slds-listbox__option-text_entity">{item.label}</span>
-                                        </span>
-                                    </div>
-                                </li>
-                            </template> -->
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="slds-listbox_selection-group">
-                <ul class="slds-listbox slds-listbox_horizontal" role="listbox">
-                    <template for:each={selectedOptions} for:item="item" for:index="index">
-
-                        <li key={item.label} class="slds-listbox-item" role="presentation">
-                            <span class="slds-pill" role="option">
-                                <span class="slds-pill__label"
-                                    title="Burlington Textiles Corp of America">{item.label}</span>
-                                <span class="slds-icon_container slds-pill__remove" title="Remove">
-                                    <lightning-icon icon-name="utility:close"></lightning-icon>
-                                </span>
-                            </span>
-                        </li>
-                    </template>
-                </ul>
-            </div>
-        </div>
-    </div>
-
+	<div class="slds-card">
+		<div class="slds-form-element">
+			<div class="slds-combobox_container slds-has-selection">
+				<div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open"
+					onmouseleave={handleContainerLeave}>
+					<lightning-input type="search" label={label} onchange={handleSearch} onblur={blurhandler}
+						onclick={handleDropDownShow} placeholder={placeholder}>
+					</lightning-input>
+					<template if:true={showOptions}>
+						<div class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid" role="listbox"
+							tabindex="0" onmouseleave={handleMouseOut} onmouseenter={handleMouseIn}>
+							<ul class="slds-listbox slds-listbox_vertical" role="presentation">
+								<template for:each={options} for:item="item" for:index="index">
+									<li key={item.label} role="presentation" class="slds-listbox__item"
+										data-value={item.value} data-label={item.label} onclick={handleOptionSelection}>
+										<div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small"
+											role="option" data-value={item.label}>
+											<span class="slds-media__body">
+                                                <span class="slds-truncate" title={item.label} >{item.label}</span>
+											</span>
+										</div>
+									</li>
+								</template>
+							</ul>
+						</div>
+					</template>
+				</div>
+			</div>
+		</div>
+		<div>
+			<template if:true={selectedOptions}>
+				<lightning-pill-container items={selectedOptions} onitemremove={handleItemRemove}>
+				</lightning-pill-container>
+			</template>
+		</div>
+	</div>
 </template>
