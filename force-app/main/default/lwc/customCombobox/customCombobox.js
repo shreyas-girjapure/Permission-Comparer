@@ -54,23 +54,13 @@ export default class CustomCombobox extends LightningElement {
         this.clearValidity();
     }
     blurhandler() {
-        this.isBlurred = true;
-        this.closeDropDown();
         this.clearValidity();
     }
 
     closeDropDown() {
-        // console.log(` the blur ${this.isBlurred} the hasOptionsOverMouse ${this.hasOptionsOverMouse}`)
-        if (this.isBlurred && !this.hasOptionsOverMouse) {
             this.showOptions = false;
-        }
     }
-    handleMouseIn() {
-        this.hasOptionsOverMouse = true;
-    }
-    handleMouseOut() {
-        this.hasOptionsOverMouse = false;
-    }
+
     handleContainerLeave() {
         this.closeDropDown();
     }
