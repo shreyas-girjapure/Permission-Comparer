@@ -35,7 +35,7 @@ export default class PermissionSetCompare extends LightningElement {
     }
 
     async connectedCallback() {
-        // this.setTestData('0PS2x000001fV5LGAU', '0PS2x000001bM3aGAE', 'Account,Bear__c,Idea,Knowledge__kav,TimeSlot');
+        this.setTestData('0PS2x000001fV5LGAU', '0PS2x000001bM3aGAE', 'Account,Bear__c,Idea,Knowledge__kav,TimeSlot');
 
         const [permissionRows, mapOfObjectNames] = await Promise.all([
             getAllPermissionSets(),
