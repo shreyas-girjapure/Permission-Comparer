@@ -70,7 +70,7 @@ export default class PermissionSetCompare extends LightningElement {
         console.log('the object comparison reuslt '+ JSON.stringify(objectComparisonResult));
         console.log('the fields comparison reuslt '+ JSON.stringify(this.fieldComparisonResult));
 
-        this.downloadSeparateComparisonFiles();
+        // this.downloadSeparateComparisonFiles();
 
     }
 
@@ -144,11 +144,6 @@ export default class PermissionSetCompare extends LightningElement {
 
     handlePermissionSetTwoChange(event) {
         this.permIdTwo = event.target.value;
-    }
-
-    handleObjectChange(event) {
-        let valueOfObjects = event.target.value;
-        this.selectedObjects = valueOfObjects;
     }
 
     transformFieldPermissionsArray(arrayToChange) {
@@ -306,10 +301,6 @@ export default class PermissionSetCompare extends LightningElement {
             selectionArray.push(currentItem.value);
         }); 
         this.selectedObjects = selectionArray;
-    }
-
-    handleObjectRemove(e){
-
     }
 
 }
